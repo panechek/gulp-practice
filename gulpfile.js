@@ -1,20 +1,39 @@
-const { src, dest, parallel} = require('gulp');
+const { src, dest, parallel, watch } = require('gulp');
+const sass = require('gulp-sass')(require('sass'));
+const pug = require('gulp-pug');
+const browserSync = require('browser-sync').create();
 
-const copyFile = () => {
-    return src('src/pages/**/*.pug')
-        .pipe(dest('build'));
+const browserSyncJob = () => {
+    browserSync.init({
+      server: "build/"
+    });
+  
+    watch('src/sass/*.scss', buildSass);
+    watch('src/pages/*.pug', buildPug);
+  };
+
+const watchers = () => {
+    watch('src/sass/app.scss', (done) => {
+        console.log('Something changed');
+
+        done();
+    })
 };
 
-const sassCompile = (done) => {
+const buildSass = () => {
     console.log('Compile SASS to CSS');
-
-    done();
+    
+    return src('src/sass/*.scss')
+        .pipe(sass())
+        .pipe(dest('build/styles/'));
 };
 
-const pugCompile = (done) => {
+const buildPug = () => {
     console.log('Compile Pug to HTML');
 
-    done();
+    return src('src/pages/*.pug')
+        .pipe(pug())
+        .pipe(dest('build/'));
 };
 
 const imagesOptimize = (done) => {
@@ -23,13 +42,8 @@ const imagesOptimize = (done) => {
     done();
 };
 
-const firstTask = (done) => {
-    console.log('My first task');
-
-    done();
-};
-
-exports.default = parallel(firstTask, sassCompile, pugCompile, imagesOptimize);
-exports.layoutCompile = parallel(sassCompile, pugCompile);
+exports.build = parallel(buildSass, buildPug);
+exports.layoutCompile = parallel(buildSass, buildPug);
 exports.assetsOptimize = imagesOptimize;
-exports.copy = copyFile;
+exports.watchers = watchers;
+exports.development = browserSyncJob;

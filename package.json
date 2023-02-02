@@ -19,5 +19,11 @@
   "dependencies": {
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.11",
+    "gulp-pug": "^5.0.0",
+    "gulp-sass": "^5.1.0",
+    "sass": "^1.58.0"
   }
 }
